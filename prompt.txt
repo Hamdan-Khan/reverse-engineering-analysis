@@ -1,0 +1,1 @@
+ Write a sample code in C language existing of: few global variables with different types, a simple addition function, a subtraction with side-effect function, a power (exponential function), a xor encryption function, a main function demonstrating the usage of the functions with stdio. 
