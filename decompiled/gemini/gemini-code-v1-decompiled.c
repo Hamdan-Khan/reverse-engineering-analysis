@@ -4,6 +4,7 @@ typedef unsigned char    byte;
 typedef unsigned char    dwfenc;
 typedef unsigned int    dword;
 typedef unsigned long    qword;
+typedef unsigned long    ulong;
 typedef unsigned char    undefined1;
 typedef unsigned int    undefined4;
 typedef unsigned long    undefined8;
@@ -32,6 +33,8 @@ struct fde_table_entry {
     dword data_loc; // Data location
 };
 
+typedef ulong size_t;
+
 typedef enum Elf_ProgramHeaderType {
     PT_NULL=0,
     PT_LOAD=1,
@@ -45,6 +48,53 @@ typedef enum Elf_ProgramHeaderType {
     PT_GNU_STACK=1685382481,
     PT_GNU_RELRO=1685382482
 } Elf_ProgramHeaderType;
+
+typedef struct Elf64_Shdr Elf64_Shdr, *PElf64_Shdr;
+
+typedef enum Elf_SectionHeaderType {
+    SHT_NULL=0,
+    SHT_PROGBITS=1,
+    SHT_SYMTAB=2,
+    SHT_STRTAB=3,
+    SHT_RELA=4,
+    SHT_HASH=5,
+    SHT_DYNAMIC=6,
+    SHT_NOTE=7,
+    SHT_NOBITS=8,
+    SHT_REL=9,
+    SHT_SHLIB=10,
+    SHT_DYNSYM=11,
+    SHT_INIT_ARRAY=14,
+    SHT_FINI_ARRAY=15,
+    SHT_PREINIT_ARRAY=16,
+    SHT_GROUP=17,
+    SHT_SYMTAB_SHNDX=18,
+    SHT_ANDROID_REL=1610612737,
+    SHT_ANDROID_RELA=1610612738,
+    SHT_GNU_ATTRIBUTES=1879048181,
+    SHT_GNU_HASH=1879048182,
+    SHT_GNU_LIBLIST=1879048183,
+    SHT_CHECKSUM=1879048184,
+    SHT_SUNW_move=1879048186,
+    SHT_SUNW_COMDAT=1879048187,
+    SHT_SUNW_syminfo=1879048188,
+    SHT_GNU_verdef=1879048189,
+    SHT_GNU_verneed=1879048190,
+    SHT_GNU_versym=1879048191
+} Elf_SectionHeaderType;
+
+struct Elf64_Shdr {
+    dword sh_name;
+    enum Elf_SectionHeaderType sh_type;
+    qword sh_flags;
+    qword sh_addr;
+    qword sh_offset;
+    qword sh_size;
+    dword sh_link;
+    dword sh_info;
+    qword sh_addralign;
+    qword sh_entsize;
+};
 
 typedef struct Elf64_Dyn Elf64_Dyn, *PElf64_Dyn;
 
@@ -132,53 +182,6 @@ struct Elf64_Dyn {
     qword d_val;
 };
 
-typedef struct Elf64_Shdr Elf64_Shdr, *PElf64_Shdr;
-
-typedef enum Elf_SectionHeaderType {
-    SHT_NULL=0,
-    SHT_PROGBITS=1,
-    SHT_SYMTAB=2,
-    SHT_STRTAB=3,
-    SHT_RELA=4,
-    SHT_HASH=5,
-    SHT_DYNAMIC=6,
-    SHT_NOTE=7,
-    SHT_NOBITS=8,
-    SHT_REL=9,
-    SHT_SHLIB=10,
-    SHT_DYNSYM=11,
-    SHT_INIT_ARRAY=14,
-    SHT_FINI_ARRAY=15,
-    SHT_PREINIT_ARRAY=16,
-    SHT_GROUP=17,
-    SHT_SYMTAB_SHNDX=18,
-    SHT_ANDROID_REL=1610612737,
-    SHT_ANDROID_RELA=1610612738,
-    SHT_GNU_ATTRIBUTES=1879048181,
-    SHT_GNU_HASH=1879048182,
-    SHT_GNU_LIBLIST=1879048183,
-    SHT_CHECKSUM=1879048184,
-    SHT_SUNW_move=1879048186,
-    SHT_SUNW_COMDAT=1879048187,
-    SHT_SUNW_syminfo=1879048188,
-    SHT_GNU_verdef=1879048189,
-    SHT_GNU_verneed=1879048190,
-    SHT_GNU_versym=1879048191
-} Elf_SectionHeaderType;
-
-struct Elf64_Shdr {
-    dword sh_name;
-    enum Elf_SectionHeaderType sh_type;
-    qword sh_flags;
-    qword sh_addr;
-    qword sh_offset;
-    qword sh_size;
-    dword sh_link;
-    dword sh_info;
-    qword sh_addralign;
-    qword sh_entsize;
-};
-
 typedef struct Elf64_Rela Elf64_Rela, *PElf64_Rela;
 
 struct Elf64_Rela {
@@ -232,17 +235,6 @@ struct Elf64_Ehdr {
     word e_shstrndx;
 };
 
-typedef struct Elf64_Sym Elf64_Sym, *PElf64_Sym;
-
-struct Elf64_Sym {
-    dword st_name;
-    byte st_info;
-    byte st_other;
-    word st_shndx;
-    qword st_value;
-    qword st_size;
-};
-
 typedef struct Elf64_Phdr Elf64_Phdr, *PElf64_Phdr;
 
 struct Elf64_Phdr {
@@ -267,6 +259,17 @@ struct NoteAbiTag {
     dword requiredKernelVersion[3]; // Major.minor.patch
 };
 
+typedef struct Elf64_Sym Elf64_Sym, *PElf64_Sym;
+
+struct Elf64_Sym {
+    dword st_name;
+    byte st_info;
+    byte st_other;
+    word st_shndx;
+    qword st_value;
+    qword st_size;
+};
+
 typedef struct evp_pkey_ctx_st evp_pkey_ctx_st, *Pevp_pkey_ctx_st;
 
 struct evp_pkey_ctx_st {
@@ -276,11 +279,10 @@ typedef struct evp_pkey_ctx_st EVP_PKEY_CTX;
 
 
 
-undefined4 global_seed_value;
-undefined4 global_constant_factor;
 undefined main;
-undefined1 completed.0;
 pointer __dso_handle;
+undefined1 completed.0;
+undefined4 global_op_counter;
 
 int _init(EVP_PKEY_CTX *ctx)
 
@@ -302,7 +304,7 @@ void FUN_00101020(void)
 
 
 
-void FUN_00101060(void)
+void FUN_00101080(void)
 
 {
   __cxa_finalize();
@@ -326,48 +328,48 @@ int puts(char *__s)
 
 // WARNING: Unknown calling convention -- yet parameter storage is locked
 
-double pow(double __x,double __y)
+size_t strlen(char *__s)
 
 {
-  double dVar1;
+  size_t sVar1;
   
-  dVar1 = pow(__x,__y);
-  return dVar1;
+  sVar1 = strlen(__s);
+  return sVar1;
 }
 
 
 
-void __printf_chk(void)
+void __stack_chk_fail(void)
 
 {
-  __printf_chk();
-  return;
+                    // WARNING: Subroutine does not return
+  __stack_chk_fail();
 }
 
 
 
-undefined8 main(void)
+// WARNING: Unknown calling convention -- yet parameter storage is locked
+
+int printf(char *__format,...)
 
 {
   int iVar1;
-  double dVar2;
   
-  iVar1 = global_constant_factor * 0x14;
-  dVar2 = pow((double)global_seed_value,5.0);
-  if (iVar1 < 0x1e) {
-    puts("Check Condition: Sum is greater than Combined Result.");
-  }
-  else {
-    puts("Check Condition: Combined Result is greater than or equal to Sum.");
-  }
-  puts("--- Results ---");
-  __printf_chk(2,"Input A: %d, Input B: %d\n",0x19,5);
-  __printf_chk(2,"Global Seed Value: %d, Global Constant Factor: %d\n",global_seed_value,
-               global_constant_factor);
-  __printf_chk(2,"Add Result (A + B): %d\n",0x1e);
-  __printf_chk(2,"Subtract & Multiply Result ((A-B)*Factor): %d\n",iVar1);
-  __printf_chk(dVar2,2,"Power Result (Seed ^ B): %.2f\n");
-  return 0;
+  iVar1 = printf(__format);
+  return iVar1;
+}
+
+
+
+// WARNING: Unknown calling convention -- yet parameter storage is locked
+
+int strcmp(char *__s1,char *__s2)
+
+{
+  int iVar1;
+  
+  iVar1 = strcmp(__s1,__s2);
+  return iVar1;
 }
 
 
@@ -385,8 +387,8 @@ void processEntry _start(undefined8 param_1,undefined8 param_2)
 
 
 
-// WARNING: Removing unreachable block (ram,0x001011e3)
-// WARNING: Removing unreachable block (ram,0x001011ef)
+// WARNING: Removing unreachable block (ram,0x00101123)
+// WARNING: Removing unreachable block (ram,0x0010112f)
 
 void deregister_tm_clones(void)
 
@@ -396,8 +398,8 @@ void deregister_tm_clones(void)
 
 
 
-// WARNING: Removing unreachable block (ram,0x00101224)
-// WARNING: Removing unreachable block (ram,0x00101230)
+// WARNING: Removing unreachable block (ram,0x00101164)
+// WARNING: Removing unreachable block (ram,0x00101170)
 
 void register_tm_clones(void)
 
@@ -413,7 +415,7 @@ void __do_global_dtors_aux(void)
   if (completed_0 != '\0') {
     return;
   }
-  FUN_00101060(__dso_handle);
+  FUN_00101080(__dso_handle);
   deregister_tm_clones();
   completed_0 = 1;
   return;
@@ -430,27 +432,112 @@ void frame_dummy(void)
 
 
 
-int add_numbers(int param_1,int param_2)
+int simple_addition(int param_1,int param_2)
 
 {
-  return param_1 + param_2;
+  return param_2 + param_1;
 }
 
 
 
-int subtract_and_multiply(int param_1,int param_2)
+int subtraction_with_side_effect(int param_1,int param_2)
 
 {
-  return global_constant_factor * (param_1 - param_2);
+  global_op_counter = global_op_counter + 1;
+  printf("   [SIDE EFFECT] Global counter incremented to: %d\n",(ulong)global_op_counter);
+  return param_1 - param_2;
 }
 
 
 
-void compute_power(int param_1,int param_2)
+double power(double param_1,int param_2)
 
 {
-  pow((double)param_1,(double)param_2);
+  undefined4 local_24;
+  undefined8 local_20;
+  undefined4 local_14;
+  undefined8 local_10;
+  
+  if (param_2 == 0) {
+    local_10 = 1.0;
+  }
+  else {
+    local_24 = param_2;
+    local_20 = param_1;
+    if (param_2 < 0) {
+      local_20 = 1.0 / param_1;
+      local_24 = -param_2;
+    }
+    local_10 = 1.0;
+    for (local_14 = 0; local_14 < local_24; local_14 = local_14 + 1) {
+      local_10 = local_10 * local_20;
+    }
+  }
+  return local_10;
+}
+
+
+
+void xor_encrypt(long param_1,long param_2,int param_3)
+
+{
+  undefined4 local_c;
+  
+  for (local_c = 0; local_c < param_3; local_c = local_c + 1) {
+    *(byte *)(param_2 + local_c) = *(byte *)(param_1 + local_c) ^ 0x4b;
+  }
+  *(undefined1 *)(param_2 + param_3) = 0;
   return;
+}
+
+
+
+undefined8 main(void)
+
+{
+  uint uVar1;
+  uint uVar2;
+  int iVar3;
+  size_t sVar4;
+  long in_FS_OFFSET;
+  undefined8 uVar5;
+  char local_e8 [112];
+  char local_78 [104];
+  long local_10;
+  
+  local_10 = *(long *)(in_FS_OFFSET + 0x28);
+  puts("--- C Function Demonstration ---");
+  printf("Global Constant Value (PI Approximation): %.10f\n",0x400921fb54411744);
+  printf("Initial Global Operation Counter: %d\n\n",(ulong)global_op_counter);
+  uVar1 = simple_addition(0x2a,0x12);
+  printf("1. Simple Addition: %d + %d = %d\n\n",0x2a,0x12,(ulong)uVar1);
+  uVar1 = subtraction_with_side_effect(100,0x19);
+  uVar2 = subtraction_with_side_effect(0x32,10);
+  printf("2. Subtraction 1: 100 - 25 = %d\n",(ulong)uVar1);
+  printf("2. Subtraction 2: 50 - 10 = %d\n",(ulong)uVar2);
+  printf("   Final Global Operation Counter after two calls: %d\n\n",(ulong)global_op_counter);
+  uVar5 = power(0x4004000000000000,4);
+  printf("3. Power Function: %.2f ^ %d = %.4f\n\n",0x4004000000000000,uVar5,4);
+  sVar4 = strlen("Hello C World!");
+  printf("4. XOR Encryption/Decryption (Key: \'%c\')\n",0x4b);
+  printf("   Original Message: %s\n","Hello C World!");
+  xor_encrypt("Hello C World!",local_e8,sVar4 & 0xffffffff);
+  printf("   Encrypted Message (Ciphertext): %s\n",local_e8);
+  sVar4 = strlen(local_e8);
+  xor_encrypt(local_e8,local_78,sVar4 & 0xffffffff);
+  printf("   Decrypted Message (Plaintext): %s\n\n",local_78);
+  iVar3 = strcmp("Hello C World!",local_78);
+  if (iVar3 == 0) {
+    puts("--- Demonstration Successful: Decryption matched original message. ---");
+  }
+  else {
+    puts("--- Demonstration Failed. ---");
+  }
+  if (local_10 != *(long *)(in_FS_OFFSET + 0x28)) {
+                    // WARNING: Subroutine does not return
+    __stack_chk_fail();
+  }
+  return 0;
 }
 
 
